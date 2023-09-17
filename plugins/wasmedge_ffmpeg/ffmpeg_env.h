@@ -84,7 +84,7 @@ private:
       Type* StructPtr = NULL;                                                           \
       if (unlikely(isRequired && FFmpegStructId == 0)) {                           \
         spdlog::error("[WasmEdge-FFmpeg] No Memory Address found for "sv Message);       \
-        return static_cast<int32_t>(ErrNo::MissingMemory);                          \
+        return static_cast<int32_t>(ErrNo::NullStructId);                          \
       }                                                                             \
       if(FFmpegStructId != 0)                                                       \
         StructPtr = static_cast<Type*>(Env.get()->fetchData(FFmpegStructId));             \
@@ -102,9 +102,9 @@ private:
 #define FFMPEG_PTR_DELETE(FFmpegStructId)         \
         Env.get()->dealloc(FFmpegStructId);          \
 
-#define MEM_PTR_CHECK(OutPtr, MemInst, Type, Offset, Message,isRequired)                  \
+#define MEM_PTR_CHECK(OutPtr, MemInst, Type, Offset, Message)                  \
       Type *OutPtr = MemInst->getPointerOrNull<Type *>(Offset);                                     \
-      if (isRequired && unlikely(OutPtr == nullptr)) {                                           \
+      if (unlikely(OutPtr == nullptr)) {                                           \
         spdlog::error("[WasmEdge-FFmpeg] "sv Message);                         \
         return static_cast<int32_t>(ErrNo::MissingMemory);                        \
       }
@@ -113,12 +113,10 @@ private:
   // Hence using 200.
   enum class ErrNo : int32_t {
     Success = 0,         // No error occurred.
-    InvalidArgument = -200, // Caller module passed an invalid argument.
     MissingMemory = -201,   // Caller module is missing a memory export.
-    Busy = -202,            // Device or resource busy.
-    RuntimeError = -203,    // Runtime Error.
+    NullStructId = -202 // Rust Sdk Passes null id.
   };
 
-}
-}
-}
+} // namespace WasmEdgeFFmpeg
+} // namespace Host
+} // namespace WasmEdge

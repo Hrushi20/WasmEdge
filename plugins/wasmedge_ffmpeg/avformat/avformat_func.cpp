@@ -2,6 +2,7 @@
 
 extern "C"{
   #include "libavformat/avformat.h"
+  #include "libavcodec/packet.h"
 }
 
 namespace WasmEdge{
@@ -14,8 +15,8 @@ AVFormatOpenInput::body(const Runtime::CallingFrame &Frame, uint32_t AvFormatCtx
                         uint32_t UrlPtr, uint32_t UrlSize,uint32_t AvInputFormatId,uint32_t AvDictionaryId){
 
   MEMINST_CHECK(MemInst,Frame,0);
-  MEM_PTR_CHECK(urlId,MemInst,char,UrlPtr,"Failed when accessing the return URL memory",true);
-  MEM_PTR_CHECK(AvFormatCtxId,MemInst,uint32_t,AvFormatCtxPtr,"Failed when accessing the return AVFormatContext Memory",true);
+  MEM_PTR_CHECK(urlId,MemInst,char,UrlPtr,"Failed when accessing the return URL memory");
+  MEM_PTR_CHECK(AvFormatCtxId,MemInst,uint32_t,AvFormatCtxPtr,"Failed when accessing the return AVFormatContext Memory");
 
   std::string TargetUrl;
   std::copy_n(urlId,UrlSize,std::back_inserter(TargetUrl));
@@ -108,7 +109,15 @@ Expect<int32_t> AVFindBestStream::body(const Runtime::CallingFrame &,uint32_t Av
     return av_find_best_stream(AvFormatContext, AvMediaType,WantedStream,RelatedStream,DecoderRet,Flags);
 }
 
+Expect<int32_t> AVReadFrame::body(const Runtime::CallingFrame &,uint32_t AvFormatCtxId,uint32_t PacketId){
+
+    FFMPEG_PTR_FETCH(AvFormatContext,AvFormatCtxId,AVFormatContext ,"AVFormatContext in Function AVFindBestStream",true);
+    FFMPEG_PTR_FETCH(AvPacket,PacketId,AVPacket,"AVPacket in Function AVFindBestStream",true);
+
+    return av_read_frame(AvFormatContext,AvPacket);
 }
-}
-}
-}
+
+} // namespace AVFormat
+} // namespace WasmEdgeFFmpeg
+} // namespace Host
+} // namespace WasmEdge
