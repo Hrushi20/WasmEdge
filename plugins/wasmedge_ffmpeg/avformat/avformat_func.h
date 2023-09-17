@@ -27,7 +27,7 @@ class AVFormatCloseInput : public WasmEdgeFFmpegAVFormat<AVFormatCloseInput> {
 public:
     AVFormatCloseInput(std::shared_ptr<WasmEdgeFFmpegEnv> HostEnv)
             : WasmEdgeFFmpegAVFormat(HostEnv) {}
-    Expect<void> body(const Runtime::CallingFrame &Frame, uint32_t avFormatCtxPtr);
+    Expect<void> body(const Runtime::CallingFrame &Frame, uint32_t AvFormatCtxId);
 };
 
 class AVReadPause : public WasmEdgeFFmpegAVFormat<AVReadPause> {
@@ -55,7 +55,7 @@ class AVDumpFormat : public WasmEdgeFFmpegAVFormat<AVDumpFormat> {
 public:
     AVDumpFormat(std::shared_ptr<WasmEdgeFFmpegEnv> HostEnv)
             : WasmEdgeFFmpegAVFormat(HostEnv) {}
-    Expect<void > body(const Runtime::CallingFrame &Frame,uint32_t avFormatCtxPtr,int32_t idx,uint32_t urlPtr,uint32_t urlSize,int32_t isOutput);
+    Expect<void > body(const Runtime::CallingFrame &Frame,uint32_t AvFormatCtxId,int32_t Idx,uint32_t UrlPtr,uint32_t urlSize,int32_t IsOutput);
 };
 
 class AVFormatFreeContext : public WasmEdgeFFmpegAVFormat<AVFormatFreeContext> {
@@ -72,7 +72,14 @@ public:
   Expect<int32_t> body(const Runtime::CallingFrame &,uint32_t AvFormatCtxId,int32_t MediaTypeId,int32_t WantedStream,int32_t RelatedStream,uint32_t DecoderRetId,int32_t Flags);
 };
 
-}
-}
-}
-}
+class AVReadFrame : public WasmEdgeFFmpegAVFormat<AVReadFrame> {
+public:
+  AVReadFrame(std::shared_ptr<WasmEdgeFFmpegEnv> HostEnv)
+      : WasmEdgeFFmpegAVFormat(HostEnv) {}
+  Expect<int32_t> body(const Runtime::CallingFrame &,uint32_t AvFormatCtxId,uint32_t PacketId);
+};
+
+} // namespace AVFormat
+} // namespace WasmEdgeFFmpeg
+} // namespace Host
+} // namespace WasmEdge
