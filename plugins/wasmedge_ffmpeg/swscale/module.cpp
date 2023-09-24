@@ -17,6 +17,13 @@ WasmEdgeFFmpegSWScaleModule(std::shared_ptr<WasmEdgeFFmpegEnv> Env)
     addHostFunc("wasmedge_ffmpeg_swscale_sws_isSupportedInput",std::make_unique<SwsIsSupportedInput>(Env));
     addHostFunc("wasmedge_ffmpeg_swscale_sws_isSupportedOutput",std::make_unique<SwsIsSupportedOutput>(Env));
     addHostFunc("wasmedge_ffmpeg_swscale_sws_isSupportedEndiannessConversion",std::make_unique<SwsIsSupportedEndiannessConversion>(Env));
+    addHostFunc("wasmedge_ffmpeg_swscale_sws_getDefaultFilter",std::make_unique<SwsGetDefaultFilter>(Env));
+    addHostFunc("wasmedge_ffmpeg_swscale_sws_freeFilter",std::make_unique<SwsFreeFilter>(Env));
+    addHostFunc("wasmedge_ffmpeg_swscale_sws_allocVec",std::make_unique<SwsAllocVec>(Env));
+    addHostFunc("wasmedge_ffmpeg_swscale_sws_getGaussianVec",std::make_unique<SwsGetGaussianVec>(Env));
+    addHostFunc("wasmedge_ffmpeg_swscale_sws_scaleVec",std::make_unique<SwsScaleVec>(Env));
+    addHostFunc("wasmedge_ffmpeg_swscale_sws_normalizeVec",std::make_unique<SwsNormalizeVec>(Env));
+    addHostFunc("wasmedge_ffmpeg_swscale_sws_freeVec",std::make_unique<SwsFreeVec>(Env));
 }
 
 } // namespace SWScale
