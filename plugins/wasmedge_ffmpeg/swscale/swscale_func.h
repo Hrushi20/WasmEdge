@@ -57,6 +57,55 @@ public:
   Expect<int32_t> body(const Runtime::CallingFrame &Frame,uint32_t AvPixFormatId);
 };
 
+class SwsGetDefaultFilter  : public WasmEdgeFFmpegSWScale<SwsGetDefaultFilter> {
+public:
+  SwsGetDefaultFilter(std::shared_ptr<WasmEdgeFFmpegEnv> HostEnv)
+      : WasmEdgeFFmpegSWScale(HostEnv) {}
+  Expect<int32_t> body(const Runtime::CallingFrame &Frame,uint32_t SwsFilterPtr,float LumaGBlur,float ChromaGBlur,float LumaSharpen,float ChromaSharpen,float ChromaHShift,float ChromaVShift,int32_t Verbose);
+};
+
+class SwsFreeFilter  : public WasmEdgeFFmpegSWScale<SwsFreeFilter> {
+public:
+  SwsFreeFilter(std::shared_ptr<WasmEdgeFFmpegEnv> HostEnv)
+      : WasmEdgeFFmpegSWScale(HostEnv) {}
+  Expect<int32_t> body(const Runtime::CallingFrame &Frame,uint32_t SwsFilterId);
+};
+
+class SwsAllocVec : public WasmEdgeFFmpegSWScale<SwsAllocVec> {
+public:
+  SwsAllocVec(std::shared_ptr<WasmEdgeFFmpegEnv> HostEnv)
+      : WasmEdgeFFmpegSWScale(HostEnv) {}
+  Expect<int32_t> body(const Runtime::CallingFrame &Frame,uint32_t SwsVectorPtr,int32_t Length);
+};
+
+class SwsGetGaussianVec : public WasmEdgeFFmpegSWScale<SwsGetGaussianVec> {
+public:
+  SwsGetGaussianVec(std::shared_ptr<WasmEdgeFFmpegEnv> HostEnv)
+      : WasmEdgeFFmpegSWScale(HostEnv) {}
+  Expect<int32_t> body(const Runtime::CallingFrame &Frame,uint32_t SwsVectorPtr,double Variance,double Quality);
+};
+
+class SwsScaleVec : public WasmEdgeFFmpegSWScale<SwsScaleVec> {
+public:
+  SwsScaleVec(std::shared_ptr<WasmEdgeFFmpegEnv> HostEnv)
+      : WasmEdgeFFmpegSWScale(HostEnv) {}
+  Expect<int32_t> body(const Runtime::CallingFrame &Frame,uint32_t SwsVectorId,double Scalar);
+};
+
+class SwsNormalizeVec : public WasmEdgeFFmpegSWScale<SwsNormalizeVec> {
+public:
+  SwsNormalizeVec(std::shared_ptr<WasmEdgeFFmpegEnv> HostEnv)
+      : WasmEdgeFFmpegSWScale(HostEnv) {}
+  Expect<int32_t> body(const Runtime::CallingFrame &Frame,uint32_t SwsVectorId,double Height);
+};
+
+class SwsFreeVec : public WasmEdgeFFmpegSWScale<SwsFreeVec> {
+public:
+  SwsFreeVec(std::shared_ptr<WasmEdgeFFmpegEnv> HostEnv)
+      : WasmEdgeFFmpegSWScale(HostEnv) {}
+  Expect<int32_t> body(const Runtime::CallingFrame &Frame,uint32_t SwsVectorId);
+};
+
 } // namespace SWScale
 } // namespace WasmEdgeFFmpeg
 } // namespace Host
