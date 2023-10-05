@@ -77,5 +77,5 @@ endif()
 # Add conditional rendering to the end.
 
 #if(WASMEDGE_PLUGIN_FFMPEG)
-add_subdirectory(wasmedge_ffmpeg)
+  add_subdirectory(wasmedge_ffmpeg)
 #endif ()
