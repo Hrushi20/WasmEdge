@@ -196,6 +196,13 @@ Expect<uint64_t> AVFrameChannelLayout::body(const Runtime::CallingFrame &,
   return FFmpegUtils::ChannelLayout::intoAVChannelID(ChannelLayout);
 }
 
+Expect<int64_t> AVFrameBestEffortTimestamp::body(const Runtime::CallingFrame &,
+                                                 uint32_t FrameId) {
+
+  FFMPEG_PTR_FETCH(AvFrame, FrameId, AVFrame);
+  return AvFrame->best_effort_timestamp;
+}
+
 } // namespace AVUtil
 } // namespace WasmEdgeFFmpeg
 } // namespace Host
