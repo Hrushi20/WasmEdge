@@ -218,6 +218,7 @@ jobs:
           apt install -y libelf-dev zlib1g-dev pkg-config
           apt install -y cargo
           bash utils/opencvmini/install-opencvmini.sh
+          bash utils/ffmpeg/install-ffmpeg-v6.0.sh
       - name: Build plugins
         shell: bash
         run: |
@@ -444,6 +445,7 @@ jobs:
           source "$HOME/.cargo/env"
           bash ./utils/wasi-crypto/build-openssl.sh
           bash utils/opencvmini/install-opencvmini.sh
+          bash utils/ffmpeg/install-ffmpeg-v6.0.sh
       - name: Build plugins
         shell: bash
         run: |
@@ -712,7 +714,7 @@ jobs:
             include_bin: "--include-bin /usr/local/bin/wasmedge"
     name: Build DockerSlim Images
     needs:
-      [create_release, build_on_manylinux2014, build_manylinux2014_runtime_only]
+      [ create_release, build_on_manylinux2014, build_manylinux2014_runtime_only ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

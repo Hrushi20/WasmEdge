@@ -170,6 +170,14 @@ public:
   Expect<uint64_t> body(const Runtime::CallingFrame &Frame, uint32_t FrameId);
 };
 
+class AVFrameBestEffortTimestamp
+    : public WasmEdgeFFmpegAVUtil<AVFrameBestEffortTimestamp> {
+public:
+  AVFrameBestEffortTimestamp(std::shared_ptr<WasmEdgeFFmpegEnv> HostEnv)
+      : WasmEdgeFFmpegAVUtil(HostEnv) {}
+  Expect<int64_t> body(const Runtime::CallingFrame &Frame, uint32_t FrameId);
+};
+
 } // namespace AVUtil
 } // namespace WasmEdgeFFmpeg
 } // namespace Host
