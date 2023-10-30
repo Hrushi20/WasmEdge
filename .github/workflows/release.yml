@@ -588,7 +588,8 @@ jobs:
       - name: Install dependencies
         run: |
           eval $(/opt/homebrew/bin/brew shellenv)
-          brew install llvm@16 ninja cmake openssl wabt opencv rust gh ffmpeg
+          brew install llvm@16 ninja cmake openssl wabt opencv rust gh
+          bash utils/ffmpeg/install-ffmpeg-v6.0.sh
       - name: Build plugins
         shell: bash
         run: |
