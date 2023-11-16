@@ -131,8 +131,8 @@ class AVCodecCtxSetPixFormat
 public:
   AVCodecCtxSetPixFormat(std::shared_ptr<WasmEdgeFFmpegEnv> HostEnv)
       : WasmEdgeFFmpegAVCodec(HostEnv) {}
-  Expect<uint32_t> body(const Runtime::CallingFrame &Frame,
-                        uint32_t AvCodecCtxId, uint32_t PixFmtId);
+  Expect<int32_t> body(const Runtime::CallingFrame &Frame,
+                       uint32_t AvCodecCtxId, uint32_t PixFmtId);
 };
 
 class AVCodecCtxSampleFormat

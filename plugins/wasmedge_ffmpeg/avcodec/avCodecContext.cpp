@@ -151,9 +151,9 @@ Expect<uint32_t> AVCodecCtxPixFormat::body(const Runtime::CallingFrame &,
   return FFmpegUtils::PixFmt::fromAVPixFmt(PixFmt);
 }
 
-Expect<uint32_t> AVCodecCtxSetPixFormat::body(const Runtime::CallingFrame &,
-                                              uint32_t AvCodecCtxId,
-                                              uint32_t PixFmtId) {
+Expect<int32_t> AVCodecCtxSetPixFormat::body(const Runtime::CallingFrame &,
+                                             uint32_t AvCodecCtxId,
+                                             uint32_t PixFmtId) {
 
   FFMPEG_PTR_FETCH(AvCodecCtx, AvCodecCtxId, AVCodecContext);
   AVPixelFormat const PixFmt = FFmpegUtils::PixFmt::intoAVPixFmt(PixFmtId);
@@ -680,10 +680,10 @@ AVCodecCtxSetErrorConcealment::body(const Runtime::CallingFrame &,
 Expect<int32_t>
 AVCodecCtxSetErrorRecognition::body(const Runtime::CallingFrame &,
                                     uint32_t AvCodecCtxId,
-                                    int32_t ErrorConcealment) {
+                                    int32_t ErrRecognition) {
 
   FFMPEG_PTR_FETCH(AvCodecCtx, AvCodecCtxId, AVCodecContext);
-  AvCodecCtx->err_recognition = ErrorConcealment;
+  AvCodecCtx->err_recognition = ErrRecognition;
   return static_cast<int32_t>(ErrNo::Success);
 }
 
