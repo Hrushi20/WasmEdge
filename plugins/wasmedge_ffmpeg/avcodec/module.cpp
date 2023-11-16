@@ -79,6 +79,8 @@ WasmEdgeFFmpegAVCodecModule::WasmEdgeFFmpegAVCodecModule(
               std::make_unique<AVCodecCtxCodecType>(Env));
   addHostFunc("wasmedge_ffmpeg_avcodec_avcodeccontext_set_codec_type",
               std::make_unique<AVCodecCtxSetCodecType>(Env));
+  addHostFunc("wasmedge_ffmpeg_avcodec_avcodeccontext_set_time_base",
+              std::make_unique<AVCodecCtxSetTimebase>(Env));
   addHostFunc("wasmedge_ffmpeg_avcodec_avcodeccontext_time_base",
               std::make_unique<AVCodecCtxTimeBase>(Env));
   addHostFunc("wasmedge_ffmpeg_avcodec_avcodeccontext_width",
@@ -92,7 +94,7 @@ WasmEdgeFFmpegAVCodecModule::WasmEdgeFFmpegAVCodecModule(
   addHostFunc("wasmedge_ffmpeg_avcodec_avcodeccontext_sample_aspect_ratio",
               std::make_unique<AVCodecCtxSampleAspectRatio>(Env));
   addHostFunc("wasmedge_ffmpeg_avcodec_avcodeccontext_set_sample_aspect_ratio",
-              std::make_unique<AVCodecCtxSampleAspectRatio>(Env));
+              std::make_unique<AVCodecCtxSetSampleAspectRatio>(Env));
   addHostFunc("wasmedge_ffmpeg_avcodec_avcodeccontext_channel_layout",
               std::make_unique<AVCodecCtxChannelLayout>(Env));
   addHostFunc("wasmedge_ffmpeg_avcodec_avcodeccontext_set_channel_layout",
@@ -190,8 +192,6 @@ WasmEdgeFFmpegAVCodecModule::WasmEdgeFFmpegAVCodecModule(
               std::make_unique<AVCodecCtxSetBitRateTolerance>(Env));
   addHostFunc("wasmedge_ffmpeg_avcodec_avcodeccontext_set_compression_level",
               std::make_unique<AVCodecCtxSetCompressionLevel>(Env));
-  addHostFunc("wasmedge_ffmpeg_avcodec_avcodeccontext_set_time_base",
-              std::make_unique<AVCodecCtxSetTimebase>(Env));
   addHostFunc("wasmedge_ffmpeg_avcodec_avcodeccontext_framerate",
               std::make_unique<AVCodecCtxFrameRate>(Env));
   addHostFunc("wasmedge_ffmpeg_avcodec_avcodeccontext_set_framerate",

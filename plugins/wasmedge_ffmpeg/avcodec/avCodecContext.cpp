@@ -25,15 +25,25 @@ Expect<uint32_t> AVCodecCtxCodecType::body(const Runtime::CallingFrame &,
   return FFmpegUtils::MediaType::fromMediaType(AvMediaType);
 }
 
-Expect<uint32_t> AVCodecCtxSetCodecType::body(const Runtime::CallingFrame &,
-                                              uint32_t AvCodecCtxId,
-                                              int32_t CodecTypeId) {
+Expect<int32_t> AVCodecCtxSetCodecType::body(const Runtime::CallingFrame &,
+                                             uint32_t AvCodecCtxId,
+                                             int32_t CodecTypeId) {
 
   FFMPEG_PTR_FETCH(AvCodecCtx, AvCodecCtxId, AVCodecContext);
   AVMediaType const AvMediaType =
       FFmpegUtils::MediaType::intoMediaType(CodecTypeId);
 
   AvCodecCtx->codec_type = AvMediaType;
+  return static_cast<int32_t>(ErrNo::Success);
+}
+
+Expect<int32_t> AVCodecCtxSetTimebase::body(const Runtime::CallingFrame &,
+                                            uint32_t AvCodecCtxId, int32_t Num,
+                                            int32_t Den) {
+
+  FFMPEG_PTR_FETCH(AvCodecCtx, AvCodecCtxId, AVCodecContext);
+  AVRational const Rational = av_make_q(Num, Den);
+  AvCodecCtx->time_base = Rational;
   return static_cast<int32_t>(ErrNo::Success);
 }
 
@@ -538,16 +548,6 @@ AVCodecCtxSetCompressionLevel::body(const Runtime::CallingFrame &,
 
   FFMPEG_PTR_FETCH(AvCodecCtx, AvCodecCtxId, AVCodecContext);
   AvCodecCtx->compression_level = CompressionLevel;
-  return static_cast<int32_t>(ErrNo::Success);
-}
-
-Expect<int32_t> AVCodecCtxSetTimebase::body(const Runtime::CallingFrame &,
-                                            uint32_t AvCodecCtxId, int32_t Num,
-                                            int32_t Den) {
-
-  FFMPEG_PTR_FETCH(AvCodecCtx, AvCodecCtxId, AVCodecContext);
-  AVRational const Rational = av_make_q(Num, Den);
-  AvCodecCtx->time_base = Rational;
   return static_cast<int32_t>(ErrNo::Success);
 }
 
