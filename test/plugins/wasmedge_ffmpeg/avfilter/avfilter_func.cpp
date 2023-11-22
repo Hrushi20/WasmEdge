@@ -1,6 +1,7 @@
 #include "avfilter//avfilter_func.h"
 #include "../utils.h"
 #include "avfilter/avFilter.h"
+#include "avfilter/buffer_source_sink.h"
 #include "avfilter/module.h"
 
 #include <gtest/gtest.h>
@@ -15,16 +16,17 @@ TEST_F(FFmpegTest, AVFilterFunc) {
 
   ASSERT_TRUE(AVFilterMod != nullptr);
 
+  // Structs Ptr
   uint32_t FilterGraphPtr = UINT32_C(4);
   uint32_t FilterPtr = UINT32_C(8);
   uint32_t Filter2Ptr = UINT32_C(12);
-  uint32_t FilterCtxPtr = UINT32_C(16);
-  uint32_t Filter2CtxPtr = UINT32_C(20);
-  uint32_t OutputFilterCtxPtr =
-      UINT32_C(24);                          // Used with AVFilterGraphGetFilter
-  uint32_t InputFilterCtxPtr = UINT32_C(28); // Used with AVFilterGraphGetFilter
+  uint32_t InputFilterCtxPtr = UINT32_C(28);  // AVFilterContext
+  uint32_t OutputFilterCtxPtr = UINT32_C(24); // AVFilterContext
   uint32_t InputInoutPtr = UINT32_C(32);
   uint32_t OutputInoutPtr = UINT32_C(36);
+  uint32_t FramePtr = UINT32_C(40);
+
+  // Strings.
   uint32_t InputNamePtr = UINT32_C(100);
   uint32_t OutputNamePtr = UINT32_C(150);
   uint32_t InputFilterNamePtr = UINT32_C(200);
@@ -51,6 +53,12 @@ TEST_F(FFmpegTest, AVFilterFunc) {
 
   std::string SpecStr = std::string("anull");
   fillMemContent(MemInst, SpecPtr, SpecStr);
+
+  //  std::string FileName = "ffmpeg-assets/sample_video.mp4"; // 32 chars
+  //  initFFmpegStructs(UINT32_C(40), UINT32_C(44), UINT32_C(48), FileName,
+  //                    UINT32_C(80), UINT32_C(84), UINT32_C(88), FramePtr);
+  initEmptyFrame(FramePtr);
+  uint32_t FrameId = readUInt32(MemInst, FramePtr);
 
   auto *FuncInst = AVFilterMod->findFuncExports(
       "wasmedge_ffmpeg_avfilter_avfilter_graph_alloc");
@@ -118,23 +126,22 @@ TEST_F(FFmpegTest, AVFilterFunc) {
     EXPECT_TRUE(HostFuncAVFilterGraphCreateFilter.run(
         CallFrame,
         std::initializer_list<WasmEdge::ValVariant>{
-            FilterCtxPtr, FilterId, InputFilterNamePtr, NameLen, ArgsPtr,
+            InputFilterCtxPtr, FilterId, InputFilterNamePtr, NameLen, ArgsPtr,
             ArgsLen, FilterGraphId},
         Result));
     ASSERT_TRUE(Result[0].get<int32_t>() >= 0);
+    writeUInt32(MemInst, 0, InputFilterCtxPtr); // Setting InputFilterCtx to 0
 
     NameLen = OutputFilterName.length();
     EXPECT_TRUE(HostFuncAVFilterGraphCreateFilter.run(
         CallFrame,
         std::initializer_list<WasmEdge::ValVariant>{
-            Filter2CtxPtr, Filter2Id, OutputFilterNamePtr, NameLen, 0, 0,
+            OutputFilterCtxPtr, Filter2Id, OutputFilterNamePtr, NameLen, 0, 0,
             FilterGraphId},
         Result));
     ASSERT_TRUE(Result[0].get<int32_t>() >= 0);
+    writeUInt32(MemInst, 0, OutputFilterCtxPtr); // Setting OutputFilterCtx to 0
   }
-
-  uint32_t FilterCtxId = readUInt32(MemInst, FilterCtxPtr);
-  ASSERT_TRUE(FilterCtxId > 0);
 
   FuncInst = AVFilterMod->findFuncExports(
       "wasmedge_ffmpeg_avfilter_avfilter_inout_alloc");
@@ -370,6 +377,7 @@ TEST_F(FFmpegTest, AVFilterFunc) {
   }
 
   // Crashing the program. Checked even from Rust side.
+
   //  FuncInst = AVFilterMod->findFuncExports(
   //      "wasmedge_ffmpeg_avfilter_avfilter_inout_free");
   //  EXPECT_NE(FuncInst, nullptr);
@@ -473,78 +481,129 @@ TEST_F(FFmpegTest, AVFilterFunc) {
         Result));
     EXPECT_EQ(Result[0].get<int32_t>(), static_cast<int32_t>(ErrNo::Success));
   }
+
+  // ==================================================================
+  //              Start Test AVBufferSource, AVBufferSink Funcs
+  // ==================================================================
+
+  FuncInst = AVFilterMod->findFuncExports(
+      "wasmedge_ffmpeg_avfilter_av_buffersrc_get_nb_failed_requests");
+  EXPECT_NE(FuncInst, nullptr);
+  EXPECT_TRUE(FuncInst->isHostFunction());
+
+  auto &HostFuncAVBufferSrcGetNbFailedRequests = dynamic_cast<
+      WasmEdge::Host::WasmEdgeFFmpeg::AVFilter::AVBufferSrcGetNbFailedRequests
+          &>(FuncInst->getHostFunc());
+
+  {
+    EXPECT_TRUE(HostFuncAVBufferSrcGetNbFailedRequests.run(
+        CallFrame,
+        std::initializer_list<WasmEdge::ValVariant>{InputFilterCtxId}, Result));
+    EXPECT_EQ(Result[0].get<int32_t>(), 0);
+  }
+
+  FuncInst = AVFilterMod->findFuncExports(
+      "wasmedge_ffmpeg_avfilter_av_buffersrc_add_frame");
+  EXPECT_NE(FuncInst, nullptr);
+  EXPECT_TRUE(FuncInst->isHostFunction());
+
+  auto &HostFuncAVBufferSrcAddFrame = dynamic_cast<
+      WasmEdge::Host::WasmEdgeFFmpeg::AVFilter::AVBufferSrcAddFrame &>(
+      FuncInst->getHostFunc());
+
+  // Returning Error Code -22 (Invalid Argument), Due to Passing Empty Frame.
+  {
+    EXPECT_TRUE(HostFuncAVBufferSrcAddFrame.run(
+        CallFrame,
+        std::initializer_list<WasmEdge::ValVariant>{InputFilterCtxId, FrameId},
+        Result));
+    ASSERT_TRUE(Result[0].get<int32_t>());
+  }
+
   //  FuncInst = AVFilterMod->findFuncExports(
-  //      "wasmedge_ffmpeg_avfilter_avfilter_pad_get_name_length");
+  //      "wasmedge_ffmpeg_avfilter_av_buffersrc_close");
   //  EXPECT_NE(FuncInst, nullptr);
   //  EXPECT_TRUE(FuncInst->isHostFunction());
   //
-  //  auto &HostFuncAVFilterPadGetNameLength = dynamic_cast<
-  //      WasmEdge::Host::WasmEdgeFFmpeg::AVFilter::AVFilterPadGetNameLength
-  //      &>( FuncInst->getHostFunc());
+  //  auto &HostFuncAVBufferSrcClose = dynamic_cast<
+  //      WasmEdge::Host::WasmEdgeFFmpeg::AVFilter::AVBufferSrcClose &>(
+  //      FuncInst->getHostFunc());
   //
   //  {
-  //    EXPECT_TRUE(HostFuncAVFilterPadGetNameLength.run(
+  //    int64_t Pts = 20;
+  //    uint32_t Flags = 30;
+  //    EXPECT_TRUE(HostFuncAVBufferSrcClose.run(
   //        CallFrame,
-  //        std::initializer_list<WasmEdge::ValVariant>{FilterGraphId},
-  //        Result));
-  //    EXPECT_EQ(Result[0].get<int32_t>(),
-  //    static_cast<int32_t>(ErrNo::Success));
-  //  }
-  //
-  //  FuncInst = AVFilterMod->findFuncExports(
-  //      "wasmedge_ffmpeg_avfilter_avfilter_pad_get_name");
-  //  EXPECT_NE(FuncInst, nullptr);
-  //  EXPECT_TRUE(FuncInst->isHostFunction());
-  //
-  //  auto &HostFuncAVFilterPadGetName = dynamic_cast<
-  //      WasmEdge::Host::WasmEdgeFFmpeg::AVFilter::AVFilterPadGetName
-  //      &>( FuncInst->getHostFunc());
-  //
-  //  {
-  //    EXPECT_TRUE(HostFuncAVFilterPadGetName.run(
-  //        CallFrame,
-  //        std::initializer_list<WasmEdge::ValVariant>{FilterGraphId},
-  //        Result));
-  //    EXPECT_EQ(Result[0].get<int32_t>(),
-  //    static_cast<int32_t>(ErrNo::Success));
-  //  }
-  //
-  //  FuncInst = AVFilterMod->findFuncExports(
-  //      "wasmedge_ffmpeg_avfilter_avfilter_pad_get_type");
-  //  EXPECT_NE(FuncInst, nullptr);
-  //  EXPECT_TRUE(FuncInst->isHostFunction());
-  //
-  //  auto &HostFuncAVFilterPadGetType = dynamic_cast<
-  //      WasmEdge::Host::WasmEdgeFFmpeg::AVFilter::AVFilterPadGetType
-  //      &>( FuncInst->getHostFunc());
-  //
-  //  {
-  //    EXPECT_TRUE(HostFuncAVFilterPadGetType.run(
-  //        CallFrame,
-  //        std::initializer_list<WasmEdge::ValVariant>{FilterGraphId},
+  //        std::initializer_list<WasmEdge::ValVariant>{InputFilterCtxPtr, Pts,
+  //                                                    Flags},
   //        Result));
   //    EXPECT_EQ(Result[0].get<int32_t>(),
   //    static_cast<int32_t>(ErrNo::Success));
   //  }
 
-  //  FuncInst = AVFilterMod->findFuncExports(
-  //      "wasmedge_ffmpeg_avfilter_avfilter_pad_drop");
-  //  EXPECT_NE(FuncInst, nullptr);
-  //  EXPECT_TRUE(FuncInst->isHostFunction());
-  //
-  //  auto &HostFuncAVFilterPadDrop =
-  //      dynamic_cast<WasmEdge::Host::WasmEdgeFFmpeg::AVFilter::AVFilterPadDrop
-  //      &>(
-  //          FuncInst->getHostFunc());
-  //
-  //  {
-  //    EXPECT_TRUE(HostFuncAVFilterPadDrop.run(
-  //        CallFrame,
-  //        std::initializer_list<WasmEdge::ValVariant>{FilterGraphId},
-  //        Result));
-  //    EXPECT_EQ(Result[0].get<int32_t>(),
-  //    static_cast<int32_t>(ErrNo::Success));
-  //  }
+  // Passing Empty frames. Return AVERROR due to no frames presen Return AVERROR
+  // due to no frames present.
+  FuncInst = AVFilterMod->findFuncExports(
+      "wasmedge_ffmpeg_avfilter_av_buffersink_get_frame");
+  EXPECT_NE(FuncInst, nullptr);
+  EXPECT_TRUE(FuncInst->isHostFunction());
+
+  auto &HostFuncAVBufferSinkGetFrame = dynamic_cast<
+      WasmEdge::Host::WasmEdgeFFmpeg::AVFilter::AVBufferSinkGetFrame &>(
+      FuncInst->getHostFunc());
+
+  {
+    EXPECT_TRUE(HostFuncAVBufferSinkGetFrame.run(
+        CallFrame,
+        std::initializer_list<WasmEdge::ValVariant>{OutputFilterCtxId, FrameId},
+        Result));
+    ASSERT_TRUE(Result[0].get<int32_t>());
+  }
+
+  FuncInst = AVFilterMod->findFuncExports(
+      "wasmedge_ffmpeg_avfilter_av_buffersink_get_samples");
+  EXPECT_NE(FuncInst, nullptr);
+  EXPECT_TRUE(FuncInst->isHostFunction());
+
+  auto &HostFuncAVBufferSinkGetSamples = dynamic_cast<
+      WasmEdge::Host::WasmEdgeFFmpeg::AVFilter::AVBufferSinkGetSamples &>(
+      FuncInst->getHostFunc());
+
+  // Passing Empty frames. Return AVERROR due to no frames presen Return AVERROR
+  // due to no frames present.
+  {
+    EXPECT_TRUE(HostFuncAVBufferSinkGetSamples.run(
+        CallFrame,
+        std::initializer_list<WasmEdge::ValVariant>{OutputFilterCtxId, FrameId,
+                                                    20},
+        Result));
+    ASSERT_TRUE(Result[0].get<int32_t>());
+  }
+
+  FuncInst = AVFilterMod->findFuncExports(
+      "wasmedge_ffmpeg_avfilter_av_buffersink_set_frame_size");
+  EXPECT_NE(FuncInst, nullptr);
+  EXPECT_TRUE(FuncInst->isHostFunction());
+
+  auto &HostFuncAvBufferSinkSetFrameSize = dynamic_cast<
+      WasmEdge::Host::WasmEdgeFFmpeg::AVFilter::AvBufferSinkSetFrameSize &>(
+      FuncInst->getHostFunc());
+
+  {
+    EXPECT_TRUE(HostFuncAvBufferSinkSetFrameSize.run(
+        CallFrame,
+        std::initializer_list<WasmEdge::ValVariant>{OutputFilterCtxId, 30},
+        Result));
+    EXPECT_EQ(Result[0].get<int32_t>(), static_cast<int32_t>(ErrNo::Success));
+  }
+
+  // ==================================================================
+  //              End Test AVBufferSource, AVBufferSink Funcs
+  // ==================================================================
+
+  // ==================================================================
+  //                        Clean Memory
+  // ==================================================================
 
   FuncInst = AVFilterMod->findFuncExports(
       "wasmedge_ffmpeg_avfilter_avfilter_free_graph_str");
@@ -615,6 +674,10 @@ TEST_F(FFmpegTest, AVFilterFunc) {
         Result));
     EXPECT_EQ(Result[0].get<int32_t>(), static_cast<int32_t>(ErrNo::Success));
   }
+
+  // ==================================================================
+  //                        End Clean Memory
+  // ==================================================================
 }
 
 } // namespace WasmEdgeFFmpeg
