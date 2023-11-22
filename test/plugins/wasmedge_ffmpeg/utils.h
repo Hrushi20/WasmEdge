@@ -4,6 +4,7 @@
 #include "avcodec/avPacket.h"
 #include "avcodec/avcodec_func.h"
 #include "avcodec/module.h"
+#include "avfilter/module.h"
 #include "avformat/avStream.h"
 #include "avformat/avformat_func.h"
 #include "avformat/module.h"
@@ -512,6 +513,12 @@ public:
                              WasmEdgeFFmpegSWResampleModule *>(
                 Module->create().release());
       }
+      if (const auto *Module =
+              Plugin->findModule("wasmedge_ffmpeg_avfilter"sv)) {
+        AVFilterMod = dynamic_cast<WasmEdge::Host::WasmEdgeFFmpeg::AVFilter::
+                                       WasmEdgeFFmpegAVFilterModule *>(
+            Module->create().release());
+      }
     }
   }
 
@@ -530,6 +537,9 @@ public:
     }
     if (AVFormatMod) {
       delete AVFormatMod;
+    }
+    if (AVFilterMod) {
+      delete AVFilterMod;
     }
   }
 
@@ -565,6 +575,8 @@ protected:
       *SWScaleMod = nullptr;
   WasmEdge::Host::WasmEdgeFFmpeg::AVcodec::WasmEdgeFFmpegAVCodecModule
       *AVCodecMod = nullptr;
+  WasmEdge::Host::WasmEdgeFFmpeg::AVFilter::WasmEdgeFFmpegAVFilterModule
+      *AVFilterMod = nullptr;
 };
 } // namespace WasmEdgeFFmpeg
 } // namespace Host
