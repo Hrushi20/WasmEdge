@@ -532,8 +532,7 @@ jobs:
       - name: Build and install dependencies
         run: |
           eval $(/opt/homebrew/bin/brew shellenv)
-          brew install llvm@16 ninja cmake openssl opencv rust nasm
-          bash utils/ffmpeg/install-ffmpeg-v6.0.sh
+          brew install llvm@16 ninja cmake openssl opencv rust ffmpeg@6
       - name: Build WasmEdge plugins using clang++ with ${{ matrix.build_type }} mode
         shell: bash
         run: |
