@@ -10,7 +10,7 @@ cd FFmpeg-n6.0
 mkdir -p output
 ./configure --prefix=$(pwd)/output --enable-gpl --enable-nonfree --enable-shared --disable-static
 
-cd ../
+cd ..
 echo $(pwd)
 
 #Setting PKG_CONFIG_PATH to be discoverd
