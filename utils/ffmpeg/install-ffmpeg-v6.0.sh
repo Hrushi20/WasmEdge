@@ -6,12 +6,8 @@ curl -sL https://github.com/FFmpeg/FFmpeg/archive/refs/tags/n6.0.zip -o ffmpeg.z
 
 unzip ffmpeg.zip
 
-cd FFmpeg-n6.0
-mkdir -p output
-./configure --prefix=$(pwd)/output --enable-gpl --enable-nonfree --enable-shared --disable-static
-
-cd ..
-echo $(pwd)
-
-#Setting PKG_CONFIG_PATH to be discoverd
-PKG_CONFIG_PATH=$(pwd)/WasmEdge/FFmpeg-n6.0/output/lib/pkgconfig cmake -Bbuild_pr2885 -GNinja -DCMAKE_BUILD_TYPE=Release -DWASMEDGE_BUILD_TESTS=ON  -DWASMEDGE_PLUGIN_FFMPEG=ON .
+mkdir -p FFmpeg-n6.0/output
+cd FFmpeg-n6.0/output
+../configure --prefix=./ --enable-gpl --enable-nonfree --enable-shared --disable-static
+make && make install
+cd ../..
