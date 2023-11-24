@@ -1,6 +1,6 @@
-#include "../utils.h"
 #include "avcodec/avCodecContext.h"
 #include "avcodec/module.h"
+#include "utils.h"
 
 #include <gtest/gtest.h>
 

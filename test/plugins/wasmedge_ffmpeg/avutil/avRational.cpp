@@ -1,6 +1,6 @@
 #include "avutil/avRational.h"
-#include "../utils.h"
 #include "avutil/module.h"
+#include "utils.h"
 
 #include <gtest/gtest.h>
 

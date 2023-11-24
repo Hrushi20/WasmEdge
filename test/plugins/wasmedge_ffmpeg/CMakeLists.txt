@@ -3,6 +3,7 @@
 
 wasmedge_add_executable(wasmedgeFFmpegTests
   main.cpp
+
   avcodec/avcodec_func.cpp
   avcodec/avCodec.cpp
   avcodec/avCodecParameters.cpp
@@ -48,6 +49,7 @@ target_include_directories(wasmedgeFFmpegTests
   PUBLIC
   $<TARGET_PROPERTY:wasmedgePlugin,INCLUDE_DIRECTORIES>
   $<TARGET_PROPERTY:wasmedgePluginWasmEdgeFFmpeg,INCLUDE_DIRECTORIES>
+  ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_link_libraries(wasmedgeFFmpegTests

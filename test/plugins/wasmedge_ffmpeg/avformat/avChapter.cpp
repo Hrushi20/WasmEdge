@@ -1,6 +1,6 @@
 #include "avformat/avChapter.h"
-#include "../utils.h"
 #include "avformat/module.h"
+#include "utils.h"
 
 #include <gtest/gtest.h>
 
