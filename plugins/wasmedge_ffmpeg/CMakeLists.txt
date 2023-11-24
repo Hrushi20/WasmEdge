@@ -66,17 +66,17 @@ target_include_directories(wasmedgePluginWasmEdgeFFmpeg
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-if (WASMEDGE_LINK_PLUGINS_STATIC)
+if(WASMEDGE_LINK_PLUGINS_STATIC)
   target_link_libraries(wasmedgePluginWasmEdgeFFmpeg
     PRIVATE
     wasmedgeCAPI
   )
-else ()
+else()
   target_link_libraries(wasmedgePluginWasmEdgeFFmpeg
     PRIVATE
     wasmedge_shared
     PkgConfig::LIBAV
   )
-endif ()
+endif()
 
 install(TARGETS wasmedgePluginWasmEdgeFFmpeg DESTINATION ${CMAKE_INSTALL_LIBDIR}/wasmedge)
