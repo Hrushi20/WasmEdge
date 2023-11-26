@@ -393,7 +393,7 @@ TEST_F(FFmpegTest, AVCodecFunc) {
 //                    when we try rerunning them.
 // ===============================================================================
 //
-//TEST_F(FFmpegTest, SendPacketReceiveFrame) {
+// TEST_F(FFmpegTest, SendPacketReceiveFrame) {
 //
 //  std::string FileName = "ffmpeg-assets/sample_video.mp4"; // 32 chars
 //  uint32_t CodecCtxPtr = UINT32_C(64);
@@ -412,7 +412,8 @@ TEST_F(FFmpegTest, AVCodecFunc) {
 //  EXPECT_TRUE(FuncInst->isHostFunction());
 //
 //  auto &HostFuncAVCodecSendFrame =
-//      dynamic_cast<WasmEdge::Host::WasmEdgeFFmpeg::AVcodec::AVCodecSendFrame &>(
+//      dynamic_cast<WasmEdge::Host::WasmEdgeFFmpeg::AVcodec::AVCodecSendFrame
+//      &>(
 //          FuncInst->getHostFunc());
 //
 //  // Invalid Argument Error. Should Use Encoder, I'm using decoder
