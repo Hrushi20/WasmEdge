@@ -54,6 +54,7 @@ target_include_directories(wasmedgeFFmpegTests
 
 target_link_libraries(wasmedgeFFmpegTests
   PRIVATE
+  wasmedgePluginWasmEdgeFFmpeg
   ${GTEST_BOTH_LIBRARIES}
 )
 

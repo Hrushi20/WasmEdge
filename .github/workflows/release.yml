@@ -232,6 +232,7 @@ jobs:
         run: |
           outbin_array=(${output_bins})
           export PKG_CONFIG_PATH=$(pwd)/FFmpeg-n6.0/output/lib/pkgconfig
+          export LD_LIBRARY_PATH=$(pwd)/FFmpeg-n6.0/output/lib:$LD_LIBRARY_PATH
           cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=Release -DWASMEDGE_BUILD_AOT_RUNTIME=OFF -DWASMEDGE_BUILD_TOOLS=OFF ${build_options}
           for (( i=0; i<${#outbin_array[@]}; i++ ));
           do
@@ -461,6 +462,7 @@ jobs:
           source "$HOME/.cargo/env"
           outbin_array=(${output_bins_all_platforms} ${output_bins_${{ matrix.docker_tag }}})
           export PKG_CONFIG_PATH=$(pwd)/FFmpeg-n6.0/output/lib/pkgconfig
+          export LD_LIBRARY_PATH=$(pwd)/FFmpeg-n6.0/output/lib:$LD_LIBRARY_PATH
           cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=Release -DWASMEDGE_BUILD_AOT_RUNTIME=OFF -DWASMEDGE_BUILD_TOOLS=OFF -DWASMEDGE_BUILD_AOT_RUNTIME=OFF -DWASMEDGE_BUILD_TOOLS=OFF ${build_options_all_platforms} ${build_options_${{ matrix.docker_tag }}} -DOPENSSL_ROOT_DIR=$(pwd)/openssl-1.1.1n/openssl
           for (( i=0; i<${#outbin_array[@]}; i++ ));
           do

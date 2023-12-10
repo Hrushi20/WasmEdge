@@ -12,7 +12,8 @@ pkg_check_modules(LIBAV REQUIRED IMPORTED_TARGET
   libavutil
 )
 
-wasmedge_add_library(wasmedgePluginWasmEdgeFFmpeg
+#wasmedge_add_library(wasmedgePluginWasmEdgeFFmpeg // Not working in Linux
+add_library(wasmedgePluginWasmEdgeFFmpeg
   SHARED
   ffmpeg_env.cpp
 
