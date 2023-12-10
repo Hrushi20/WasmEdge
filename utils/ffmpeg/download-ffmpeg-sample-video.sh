@@ -16,4 +16,5 @@ fi
 
 if [ ! -f $TODIR/sample_video.mp4 ]; then
   curl -sL $SAMPLE_VIDEO -o $TODIR/sample_video.mp4
+  cp $TODIR/sample_video.mp4 $TODIR/dummy.mp4 # Dummy file to manipulate and run tests on file.
 fi
