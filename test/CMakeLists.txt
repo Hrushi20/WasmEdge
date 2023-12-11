@@ -2,30 +2,30 @@
 # SPDX-FileCopyrightText: 2019-2022 Second State INC
 
 find_package(GTest QUIET)
-if (GTest_FOUND)
+if(GTest_FOUND)
   set(GTEST_BOTH_LIBRARIES "${GTEST_BOTH_LIBRARIES};Threads::Threads")
-else ()
+else()
   FetchContent_Declare(
     GTest
     GIT_REPOSITORY https://github.com/google/googletest.git
     GIT_TAG release-1.11.0
     GIT_SHALLOW TRUE
   )
-  set(BUILD_GMOCK ON CACHE BOOL "Builds the googlemock subproject" FORCE)
+  set(BUILD_GMOCK OFF CACHE BOOL "Builds the googlemock subproject" FORCE)
   set(INSTALL_GTEST OFF CACHE BOOL "Enable installation of googletest. (Projects embedding googletest may want to turn this OFF.)" FORCE)
   get_property(
     compile_options
     DIRECTORY
     PROPERTY COMPILE_OPTIONS
   )
-  if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set_property(
       DIRECTORY
       APPEND
       PROPERTY COMPILE_OPTIONS
       ${WASMEDGE_CFLAGS}
     )
-  else ()
+  else()
     set_property(
       DIRECTORY
       APPEND
@@ -39,7 +39,7 @@ else ()
       -Wno-zero-as-null-pointer-constant
       -Wno-deprecated
     )
-    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
       set_property(
         DIRECTORY
         APPEND
@@ -47,8 +47,8 @@ else ()
         -Wno-suggest-destructor-override
         -Wno-suggest-override
       )
-    endif ()
-  endif ()
+    endif()
+  endif()
 
   FetchContent_MakeAvailable(GTest)
   set_property(
@@ -57,25 +57,25 @@ else ()
     ${compile_options}
   )
   unset(compile_options)
-  set(GTEST_BOTH_LIBRARIES "gtest;gtest_main" "gmock;gmock")
-endif ()
+  set(GTEST_BOTH_LIBRARIES "gtest;gtest_main")
+endif()
 
-if (WASMEDGE_BUILD_AOT_RUNTIME)
+if(WASMEDGE_BUILD_AOT_RUNTIME)
   add_subdirectory(aot)
   add_subdirectory(mixcall)
-endif ()
+endif()
 add_subdirectory(common)
 add_subdirectory(spec)
 add_subdirectory(loader)
 add_subdirectory(executor)
 add_subdirectory(thread)
-if (WASMEDGE_BUILD_SHARED_LIB)
+if(WASMEDGE_BUILD_SHARED_LIB)
   add_subdirectory(api)
   add_subdirectory(externref)
-endif ()
-if (WASMEDGE_BUILD_PLUGINS)
+endif()
+if(WASMEDGE_BUILD_PLUGINS)
   add_subdirectory(plugins)
-endif ()
+endif()
 add_subdirectory(host/socket)
 add_subdirectory(host/wasi)
 add_subdirectory(host/mock)
@@ -85,7 +85,7 @@ add_subdirectory(po)
 add_subdirectory(memlimit)
 add_subdirectory(errinfo)
 
-if (WASMEDGE_BUILD_COVERAGE)
+if(WASMEDGE_BUILD_COVERAGE)
   setup_target_for_coverage_gcovr_html(
     NAME coverage
     EXECUTABLE ctest -j ${PROCESSOR_COUNT}
@@ -103,4 +103,4 @@ if (WASMEDGE_BUILD_COVERAGE)
     "${PROJECT_SOURCE_DIR}/thirdparty/*"
     "${PROJECT_SOURCE_DIR}/test/*"
   )
-endif ()
+endif()
